@@ -93,6 +93,8 @@ T Queue<T>::get_queue() {
     ListNode<T> *current = front_queue_;
     while (current != back_queue_) {
 
+        // Need to get to the ListNode which is two nodes
+        // prior to the back_queue_ ListNode
         if (current->next_->next_ != back_queue_) {
             current = current->next_;
             continue;
@@ -100,9 +102,10 @@ T Queue<T>::get_queue() {
 
         ListNode<T> *removed_node = current->next_;
         current->next_ = current->next_->next_;
-        std::memcpy(&return_val, &removed_node->value_, sizeof(T));
-        queue_len_--;
+
+        return_val = removed_node->value_;
         delete removed_node;
+        queue_len_--;
     }
 
     return return_val;
