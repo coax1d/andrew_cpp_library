@@ -49,9 +49,9 @@ Queue<T>::Queue() {
 template<class T>
 Queue<T>::~Queue() {
 
-    ListNode<T> *current = front_queue_;
+    auto current = front_queue_;
     while (current) {
-        ListNode<T> *temp = current;
+        auto temp = current;
         current = current->next_;
         delete temp;
     }
@@ -60,27 +60,23 @@ Queue<T>::~Queue() {
 template<class T>
 void Queue<T>::put_queue(T &item) {
 
-    ListNode<T> *new_node = new ListNode<T>(item);
+    auto new_node = new ListNode<T>(item);
 
-    ListNode<T> *temp = front_queue_->next_;
+    auto temp = front_queue_->next_;
     front_queue_->next_ = new_node;
     new_node->next_ = temp;
     queue_len_++;
-
-    std::cout << "Added item to Linked List! value is " << new_node->value_ << std::endl;
 }
 
 template<class T>
 void Queue<T>::put_queue(T &&item) {
 
-    ListNode<T> *new_node = new ListNode<T>(item);
+    auto new_node = new ListNode<T>(item);
 
-    ListNode<T> *temp = front_queue_->next_;
+    auto temp = front_queue_->next_;
     front_queue_->next_ = new_node;
     new_node->next_ = temp;
     queue_len_++;
-
-    std::cout << "Added item to Linked List! value is " << new_node->value_ << std::endl;
 }
 
 template<class T>
@@ -90,7 +86,7 @@ T Queue<T>::get_queue() {
 
     T return_val;
 
-    ListNode<T> *current = front_queue_;
+    auto current = front_queue_;
     while (current != back_queue_) {
 
         // Need to get to the ListNode which is two nodes
@@ -100,7 +96,7 @@ T Queue<T>::get_queue() {
             continue;
         }
 
-        ListNode<T> *removed_node = current->next_;
+        auto removed_node = current->next_;
         current->next_ = current->next_->next_;
 
         return_val = removed_node->value_;
