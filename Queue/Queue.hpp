@@ -28,8 +28,8 @@ class Queue {
         Queue<T>();
         ~Queue<T>();
 
-        Queue(Queue &) = delete;
-        Queue & operator=(Queue &) = delete;
+        Queue<T>(Queue &) = delete;
+        Queue<T> & operator=(Queue &) = delete;
 
         void put_queue(T &item);
         void put_queue(T &&item);
