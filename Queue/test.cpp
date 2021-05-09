@@ -19,7 +19,7 @@ void test() {
     // put_queue test
     queue.put_queue(1);
     queue.put_queue(test2);
-    print(put_queue_msg, 1);
+    print(put_queue_msg, test1);
     print(put_queue_msg, test2);
 
     // get_queue test

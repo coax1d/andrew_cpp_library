@@ -6,20 +6,20 @@ Author: Andrew Burger */
 #include <iostream>
 #include <string>
 #include <memory>
+#include <utility>
 #include <assert.h>
 #include <cstring>
 
 template<class T>
 struct ListNode {
 
-    explicit ListNode(ListNode *next) : next_{next} {}
-    ListNode(T &value) : value_{std::move(value)} {}
-    ListNode(T &value, ListNode *next) :
-        value_{std::move(value)},
+    ListNode() = default;
+    explicit ListNode(T &&value, std::shared_ptr<ListNode<T>> next = nullptr) :
+        value_{value},
         next_{next} {}
 
-    T value_;
-    std::shared_ptr<ListNode<T>> next_;
+    T value_{};
+    std::shared_ptr<ListNode<T>> next_{nullptr};
 };
 
 template<class T>
@@ -32,21 +32,22 @@ class Queue {
         Queue<T>(Queue<T> &) = delete;
         Queue<T> & operator=(Queue<T> &) = delete;
 
-        void put_queue(T &item);
-        void put_queue(T &&item);
+        template<class U>
+        void put_queue(U &&item);
+
         T get_queue();
 
     private:
-        std::shared_ptr<ListNode<T>> front_queue_;
-        std::shared_ptr<ListNode<T>> back_queue_;
-        size_t queue_len_ = 0;
+        std::shared_ptr<ListNode<T>> front_queue_{nullptr};
+        std::shared_ptr<ListNode<T>> back_queue_{nullptr};
+        size_t queue_len_{};
 };
 
 template<class T>
-Queue<T>::Queue() {
+Queue<T>::Queue() :
+    front_queue_{std::make_shared<ListNode<T>>()},
+    back_queue_{std::make_shared<ListNode<T>>()} {
 
-    front_queue_ = std::make_shared<ListNode<T>>(nullptr);
-    back_queue_ = std::make_shared<ListNode<T>>(nullptr);
     front_queue_->next_ = back_queue_;
 }
 
@@ -54,20 +55,10 @@ template<class T>
 Queue<T>::~Queue() {}
 
 template<class T>
-void Queue<T>::put_queue(T &item) {
+template<class U>
+void Queue<T>::put_queue(U &&item) {
 
-    auto new_node = std::make_shared<ListNode<T>>(item);
-
-    auto temp = front_queue_->next_;
-    front_queue_->next_ = new_node;
-    new_node->next_ = temp;
-    queue_len_++;
-}
-
-template<class T>
-void Queue<T>::put_queue(T &&item) {
-
-    auto new_node = std::make_shared<ListNode<T>>(item);
+    auto new_node = std::make_shared<ListNode<T>>(std::forward<T>(item));
 
     auto temp = front_queue_->next_;
     front_queue_->next_ = new_node;
