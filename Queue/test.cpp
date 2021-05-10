@@ -22,7 +22,7 @@ void test() {
     print(put_queue_msg, test1);
     print(put_queue_msg, test2);
 
-    // get_queue test
+    get_queue test
     print(get_queue_msg, queue.get_queue());
     print(get_queue_msg, queue.get_queue());
 }

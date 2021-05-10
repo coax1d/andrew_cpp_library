@@ -44,12 +44,7 @@ class Queue {
 };
 
 template<class T>
-Queue<T>::Queue() :
-    front_queue_{std::make_shared<ListNode<T>>()},
-    back_queue_{std::make_shared<ListNode<T>>()} {
-
-    front_queue_->next_ = back_queue_;
-}
+Queue<T>::Queue() {}
 
 template<class T>
 Queue<T>::~Queue() {}
@@ -60,9 +55,14 @@ void Queue<T>::put_queue(U &&item) {
 
     auto new_node = std::make_shared<ListNode<T>>(std::forward<T>(item));
 
-    auto temp = front_queue_->next_;
-    front_queue_->next_ = new_node;
+    auto temp = front_queue_;
+    front_queue_ = new_node;
     new_node->next_ = temp;
+
+    if (!new_node->next_) {
+        back_queue_ = new_node;
+    }
+
     queue_len_++;
 }
 
@@ -73,19 +73,26 @@ T Queue<T>::get_queue() {
 
     T return_val;
 
+    if (front_queue_ == back_queue_) { // One node in the list
+        return_val = front_queue_->value_;
+        front_queue_ = nullptr;
+        back_queue_ = nullptr;
+        return return_val;
+    }
+
     auto current = front_queue_;
     while (current != back_queue_) {
 
         // Need to get to the ListNode which is two nodes
         // prior to the back_queue_ ListNode
-        if (current->next_->next_ != back_queue_) {
+        if (current->next_ != back_queue_) {
             current = current->next_;
             continue;
         }
 
-        auto removed_node = current->next_;
-        current->next_ = current->next_->next_;
+        back_queue_ = current;
 
+        auto removed_node = current->next_;
         return_val = removed_node->value_;
         queue_len_--;
     }
