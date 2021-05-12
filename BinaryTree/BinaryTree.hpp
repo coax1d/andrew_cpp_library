@@ -8,67 +8,71 @@
 #include <memory>
 #include <algorithm>
 
-template<typename T, typename U>
+template<typename DataType, typename IdType>
 struct TreeNode {
 
-    TreeNode<T, U>() = default;
+    TreeNode<DataType, IdType>() = default;
 
-    TreeNode<T,U> (U id,
-                   std::shared_ptr<T> data,
-                   std::shared_ptr<T> left,
-                   std::shared_ptr<T> right)
+    explicit TreeNode<DataType, IdType>(IdType id)
+        : id_{id} {}
+
+    TreeNode<DataType, IdType> (IdType id,
+                   std::shared_ptr<DataType> data,
+                   std::shared_ptr<TreeNode<DataType, IdType>> left,
+                   std::shared_ptr<TreeNode<DataType, IdType>> right)
         : id_{id},
           data_{data},
           left_{left},
           right_{right}
         {}
 
-    U id_{};
-    std::shared_ptr<T> data_;
-    std::shared_ptr<T> left_;
-    std::shared_ptr<T> right_;
+    IdType id_{};
+    std::shared_ptr<DataType> data_{nullptr};
+    std::shared_ptr<TreeNode<DataType, IdType>> left_{nullptr};
+    std::shared_ptr<TreeNode<DataType, IdType>> right_{nullptr};
 };
 
-template<typename T, typename U>
+template<typename DataType, typename IdType>
 class BinaryTree {
 
     public:
-        BinaryTree<T, U>();
-        ~BinaryTree<T, U>();
+        BinaryTree<DataType, IdType>();
+        ~BinaryTree<DataType, IdType>();
 
-        explicit BinaryTree<T, U>(std::vector<U> &array);
+        explicit BinaryTree<DataType, IdType>(std::vector<IdType> &array);
 
-        std::shared_ptr<TreeNode<T, U>>
-        array_to_bst(std::vector<U> &array, int start, int end);
+        std::shared_ptr<TreeNode<DataType, IdType>>
+        array_to_bst(std::vector<IdType> &array, int start, int end);
 
-        void add_node(U id, T *data);
-        TreeNode<T, U> find_node();
-        void delete_node(U id);
-        void replace_node(U id, U new_id, T *data);
+        void add_node(IdType id, DataType *data);
+        TreeNode<DataType, IdType> find_node();
+        void delete_node(IdType id);
+        void replace_node(IdType id, IdType new_id, DataType *data);
         void balance_tree();
 
     private:
         size_t depth_{};
-        std::shared_ptr<TreeNode<T, U>> root_;
+        std::shared_ptr<TreeNode<DataType, IdType>> root_;
 };
 
-template<typename T, typename U>
-BinaryTree<T, U>::BinaryTree() :
-    root_{std::make_shared<TreeNode<T, U>>},
+template<typename DataType, typename IdType>
+BinaryTree<DataType, IdType>::BinaryTree() :
+    root_{std::make_shared<TreeNode<DataType, IdType>>},
     depth_{0} {}
 
-template<typename T, typename U>
-BinaryTree<T, U>::BinaryTree(std::vector<U> &array) :
+template<typename DataType, typename IdType>
+BinaryTree<DataType, IdType>::BinaryTree(std::vector<IdType> &array) :
     depth_{0} {
-
-    // std::cout << "array[1] is " << temp_array[1] << std::endl;
 
     root_ = array_to_bst(array, 0, array.size() - 1);
 }
 
-template<typename T, typename U>
-std::shared_ptr<TreeNode<T, U>>
-BinaryTree<T, U>::array_to_bst(std::vector<U> &array, int start, int end) {
+template<typename DataType, typename IdType>
+BinaryTree<DataType, IdType>::~BinaryTree() {}
+
+template<typename DataType, typename IdType>
+std::shared_ptr<TreeNode<DataType, IdType>>
+BinaryTree<DataType, IdType>::array_to_bst(std::vector<IdType> &array, int start, int end) {
 
     if (start > end) {
         return nullptr;
@@ -76,7 +80,7 @@ BinaryTree<T, U>::array_to_bst(std::vector<U> &array, int start, int end) {
 
     auto mid = (start + end) / 2;
 
-    auto root = std::make_shared<TreeNode<T, U>>(array[mid]);
+    auto root = std::make_shared<TreeNode<DataType, IdType>>(array[mid]);
 
     std::cout << root->id_ << " was put into the tree" << std::endl;
 
