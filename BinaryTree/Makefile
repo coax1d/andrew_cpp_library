@@ -1,11 +1,12 @@
 CXX = g++
-CXXFLAGS = -Wall -g -std=c++2a -fsanitize=address
+CXXFLAGS = -Wall -Werror -g -O3 -std=c++2a -fsanitize=address
 
+.PHONY: default
 default: test
 
-test: test.o 
-	$(CXX) $(CXXFLAGS) -o test test.o -lpthread
+test: test.cpp BinaryTree.hpp
+	$(CXX) $(CXXFLAGS) -o test test.cpp -lpthread
 
+.PHONY: clean
 clean:
 	$(RM) test *.o *~
-
