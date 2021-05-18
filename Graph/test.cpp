@@ -21,7 +21,13 @@ int main(void) {
     m_graph.add_edge(2, 3);
     m_graph.add_edge(9, 3);
 
+    std::cout << "Depth first search results:" << std::endl;
     m_graph.depth_first_search(2);
+
+    m_graph.clear_visited();
+
+    std::cout << "Breadth first search results:" << std::endl;
+    m_graph.breadth_first_search(2);
 
     return 0;
 }

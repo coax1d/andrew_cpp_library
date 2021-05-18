@@ -8,6 +8,7 @@ Author: Andrew Burger
 #include <iostream>
 #include <memory>
 #include <string>
+#include <deque>
 
 template<typename Data>
 struct GraphNode {
@@ -37,7 +38,7 @@ class Graph {
     Graph<Data>() = default;
     ~Graph<Data>() = default;
 
-    Graph<Data>(std::string name);
+    explicit Graph<Data>(std::string name);
 
     void create_node(size_t id, std::shared_ptr<Data> data);
 
@@ -49,6 +50,8 @@ class Graph {
 
     // Using BFS algorithm print out all ids
     void breadth_first_search(size_t id);
+
+    void clear_visited();
 
     private:
         std::string name_{};
@@ -73,13 +76,13 @@ void Graph<Data>::create_node(size_t id, std::shared_ptr<Data> data) {
 template<typename Data>
 void Graph<Data>::add_edge(size_t v, size_t w) {
 
-        assert(nodes_.contains(v) && nodes_.contains(w));
+    assert(nodes_.contains(v) && nodes_.contains(w));
 
-        auto node_1 = nodes_.at(v);
-        auto node_2 = nodes_.at(w);
+    auto node_1 = nodes_.at(v);
+    auto node_2 = nodes_.at(w);
 
-        node_1->adjacent_.push_back(w);
-        std::cout << w << " Added to " << v << " adjacency list" << std::endl;
+    node_1->adjacent_.push_back(w);
+    std::cout << w << " Added to " << v << " adjacency list" << std::endl;
 }
 
 template<typename Data>
@@ -105,4 +108,36 @@ void Graph<Data>::depth_first_search(size_t id) {
 template<typename Data>
 void Graph<Data>::breadth_first_search(size_t id) {
 
+    assert(nodes_.contains(id));
+
+    std::deque<size_t> queue;
+
+    visited_.at(id) = true;
+    queue.push_back(id);
+
+    while (!queue.empty()) {
+
+        auto node = nodes_.at(queue.front());
+        queue.pop_front();
+
+        std::cout << "Visiting node " << node->id_ << std::endl;
+
+        auto adjacent_list = node->adjacent_;
+
+        for (auto i = 0; i < adjacent_list.size(); ++i) {
+
+            if (!visited_.at(adjacent_list[i])) {
+                visited_.at(adjacent_list[i]) = true;
+                queue.push_back(adjacent_list[i]);
+            }
+        }
+    }
+}
+
+template<typename Data>
+void Graph<Data>::clear_visited() {
+
+    for (auto &map_element: visited_) {
+        map_element.second = false;
+    }
 }
