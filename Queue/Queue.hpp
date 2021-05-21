@@ -10,7 +10,7 @@ Author: Andrew Burger */
 #include <assert.h>
 #include <cstring>
 
-template<class T>
+template<typename T>
 struct ListNode {
 
     ListNode() = default;
@@ -22,7 +22,7 @@ struct ListNode {
     std::shared_ptr<ListNode<T>> next_{nullptr};
 };
 
-template<class T>
+template<typename T>
 class Queue {
 
     public:
@@ -37,20 +37,22 @@ class Queue {
 
         T get_queue();
 
+        const size_t get_len();
+
     private:
         std::shared_ptr<ListNode<T>> front_queue_{nullptr};
         std::shared_ptr<ListNode<T>> back_queue_{nullptr};
         size_t queue_len_{};
 };
 
-template<class T>
+template<typename T>
 Queue<T>::Queue() {}
 
-template<class T>
+template<typename T>
 Queue<T>::~Queue() {}
 
-template<class T>
-template<class U>
+template<typename T>
+template<typename U>
 void Queue<T>::put_queue(U &&item) {
 
     auto new_node = std::make_shared<ListNode<T>>(std::forward<T>(item));
@@ -66,7 +68,7 @@ void Queue<T>::put_queue(U &&item) {
     queue_len_++;
 }
 
-template<class T>
+template<typename T>
 T Queue<T>::get_queue() {
 
     assert(queue_len_ != 0);
@@ -98,6 +100,11 @@ T Queue<T>::get_queue() {
     }
 
     return return_val;
+}
+
+template<typename T>
+const size_t Queue<T>::get_len() {
+    return queue_len_;
 }
 
 #endif // QUEUE_QUEUE_HPP_
