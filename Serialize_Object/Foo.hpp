@@ -43,7 +43,7 @@ Foo::Foo(std::istream & serialization) {
     int buf[z.size()];
     serialization.read((char*)(&buf), sizeof(int) * z.size());
 
-    for (int i = 0; i < z.size(); ++i) {
+    for (size_t i = 0; i < z.size(); ++i) {
         z.at(i) = buf[i];
     }
 }
@@ -66,7 +66,7 @@ void Foo::deserialize(std::istream &serialization) {
     int buf[z.size()];
     serialization.read((char*)(&buf), sizeof(int) * z.size());
 
-    for (int i = 0; i < z.size(); ++i) {
+    for (size_t i = 0; i < z.size(); ++i) {
         z.at(i) = buf[i];
     }
 }
@@ -78,7 +78,7 @@ void Foo::print_fields() {
         << " y: " << y
         << " z:";
 
-    for (int i = 0; i < z.size(); i++) {
+    for (size_t i = 0; i < z.size(); i++) {
         std::cout << ' ' << z[i];
     }
     std::cout << std::endl;
