@@ -16,9 +16,9 @@ class FooSerializerTest : public ::testing::Test {
             f2.serialize(output2);
             f3.serialize(output3);
 
-            output1.flush();
-            output2.flush();
-            output3.flush();
+            output1.close();
+            output2.close();
+            output3.close();
 
             input1.open("serialized_object1.bin", std::ios::binary);
             input2.open("serialized_object2.bin", std::ios::binary);
@@ -26,10 +26,6 @@ class FooSerializerTest : public ::testing::Test {
         }
 
         void TearDown() override {
-
-            output1.close();
-            output2.close();
-            output3.close();
 
             input1.close();
             input2.close();
@@ -55,7 +51,6 @@ TEST_F(FooSerializerTest, DefaultInitialization) {
     EXPECT_EQ(f1.get_x(), 1.0);
     EXPECT_EQ(f1.get_y(), 3);
 
-    f1.print_fields();
     auto vec = f1.get_z();
     EXPECT_EQ(vec.at(0), 1);
     EXPECT_EQ(vec.at(1), 2);
@@ -67,8 +62,6 @@ TEST_F(FooSerializerTest, SerializeDefaultNums) {
     Foo tester(input1);
     EXPECT_EQ(tester.get_x(), f1.get_x());
     EXPECT_EQ(tester.get_y(), f1.get_y());
-
-    tester.print_fields();
     EXPECT_EQ(tester.get_z(), f1.get_z());
 }
 
@@ -92,9 +85,8 @@ TEST_F(FooSerializerTest, Deserialize) {
 
     Foo tester;
     tester.deserialize(input2);
-
-    EXPECT_EQ(tester.get_x(), 99.7);
-    EXPECT_EQ(tester.get_y(), 42);
+    EXPECT_EQ(tester.get_x(), f2.get_x());
+    EXPECT_EQ(tester.get_y(), f2.get_y());
     EXPECT_EQ(tester.get_z(), f2.get_z());
 }
 
@@ -102,18 +94,4 @@ int main(void) {
 
     ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();
-
-    // Foo a(-3.0, -2, {1,7,42});
-
-    // std::ofstream output("testie.bin", std::ios_base::binary);
-    // a.serialize(output);
-    // output.close();
-
-    // std::ifstream input("testie.bin", std::ios_base::binary);
-
-    // Foo b(input);
-    // b.print_fields();
-    // input.close();
-
-    // return 0;
 }

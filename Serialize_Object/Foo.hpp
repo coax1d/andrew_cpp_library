@@ -35,7 +35,7 @@ class Foo {
 Foo::Foo(float a, int b, std::initializer_list<int> l) :
     x{a}, y{b}, z{l} {}
 
-Foo::Foo(std::istream & serialization) {
+Foo::Foo(std::istream &serialization) {
 
     serialization.read((char*)(&x), sizeof(float));
     serialization.read((char*)(&y), sizeof(int));
