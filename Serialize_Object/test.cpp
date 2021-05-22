@@ -16,6 +16,10 @@ class FooSerializerTest : public ::testing::Test {
             f2.serialize(output2);
             f3.serialize(output3);
 
+            output1.flush();
+            output2.flush();
+            output3.flush();
+
             input1.open("serialized_object1.bin", std::ios::binary);
             input2.open("serialized_object2.bin", std::ios::binary);
             input3.open("serialized_object3.bin", std::ios::binary);
