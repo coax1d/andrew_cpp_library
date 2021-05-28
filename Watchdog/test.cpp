@@ -2,50 +2,76 @@
 #include "gtest/gtest.h"
 #include "Watchdog.hpp"
 
-//TODO: Finish testing currently does not compile with this test
+//TODO: Add more testing
 
-static int worker1(Watchdog &dog) {
+std::atomic<bool> is_over_max_workers{false};
+
+void dummy_worker(Watchdog &dog) {
+
+    std::thread::id worker_id = std::this_thread::get_id();
+    if (dog.pet(worker_id)) {
+        is_over_max_workers = true;
+    }
+}
+
+static void worker1(Watchdog &dog, int &pet_counter) {
 
     // pets the dog 6 times before finishing
     std::thread::id worker_id = std::this_thread::get_id();
-    int pet_counter = 0;
     int i = 6;
     while(1) {
 
-        if (--i > 0) {
+        std::cout << "pet_counter is " << pet_counter << std::endl;
+
+        if (--i >= 0) {
             if (dog.pet(worker_id)) {
                 pet_counter++;
             }
         }
         else {
             dog.complete(worker_id);
+            break;
         }
+
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
     }
-    return pet_counter;
 }
 
 class WatchdogTest : public ::testing::Test {
     protected:
 
-        // void Setup() override {
+        void SetUp() override {
 
 
-        // }
-
-        // void TearDown() override {
-
-        // }
+        }
 
         Watchdog dog1_;
         Watchdog dog2_;
-        int pet_counter_ = 0;
-
+        std::thread w1_;
+        std::thread w2_;
+        int pet_counter_{0};
 };
 
 TEST_F(WatchdogTest, TestPetDogSixTimes) {
-    pet_counter_ = worker1(dog1_);
+    w1_ = std::thread(worker1, std::ref(dog1_), std::ref(pet_counter_));
+    w1_.join();
     EXPECT_EQ(pet_counter_, 6);
 }
+
+TEST_F(WatchdogTest, AddingWorkerWhenFull) {
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < DEFAULT_MAX_WORKERS + 1; ++i) {
+        // std::thread i(dummy_worker, std::ref(dog2_))
+        threads.push_back(std::thread(dummy_worker, std::ref(dog2_)));
+        threads[i].join();
+    }
+    EXPECT_EQ(is_over_max_workers, true);
+}
+
+// TEST_F(WatchdogTest, WorkerTimeoutHasBarkedTrue)
+// Test that dog barks when a worker goes over the deadline
 
 int main(void) {
 

@@ -2,16 +2,16 @@
 
 Watchdog::Watchdog()
         :
-        interval_{DEFAULT_INTERVAL},
-        max_workers_{DEFAULT_MAX_WORKERS}
+        max_workers_{DEFAULT_MAX_WORKERS},
+        interval_{DEFAULT_INTERVAL}
         {
     main_thread_ = std::thread(&Watchdog::sick_the_watch_dog, this);
 }
 
 Watchdog::Watchdog(double deadline_interval, size_t max_workers)
         :
-        interval_{deadline_interval},
-        max_workers_{max_workers}
+        max_workers_{max_workers},
+        interval_{deadline_interval}
         {
     main_thread_ = std::thread(&Watchdog::sick_the_watch_dog, this);
 }
@@ -62,7 +62,7 @@ bool Watchdog::complete(worker_id &id) {
     return false;
 }
 
-bool Watchdog::is_over_deadline(worker_id &id) {
+bool Watchdog::is_over_deadline() {
 
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -92,9 +92,7 @@ void Watchdog::sick_the_watch_dog() {
 
     while (enable_main_thread) {
 
-        auto curr_worker_id = queue_.front().first;
-
-        if (is_over_deadline(curr_worker_id)) {
+        if (is_over_deadline()) {
 
             has_dog_barked_ = true;
             std::cout << "A worker has failed to meet the deadline"
@@ -105,7 +103,7 @@ void Watchdog::sick_the_watch_dog() {
     }
 }
 
-auto Watchdog::calculate_deadline() {
+auto Watchdog::calculate_deadline() -> decltype(std::chrono::system_clock::now()){
 
     auto curr_time = std::chrono::system_clock::now();
     auto deadline =

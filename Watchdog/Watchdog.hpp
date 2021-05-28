@@ -41,7 +41,7 @@ class Watchdog {
         of the queue has passed their work deadline without petting the dog.
         (i.e. signaling that they are in a good state while working on their task)
         */
-        bool is_over_deadline(worker_id &id);
+        bool is_over_deadline();
 
         /*
         Gets the deadline for the next worker in the queue.
@@ -104,5 +104,5 @@ class Watchdog {
             bool has_dog_barked_{false};
 
             void sick_the_watch_dog();
-            auto calculate_deadline();
+            auto calculate_deadline() -> decltype(std::chrono::system_clock::now());
 };
