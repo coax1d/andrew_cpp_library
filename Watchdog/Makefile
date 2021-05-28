@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -g -std=c++2a -fsanitize=address
-LIB = -L/Users/andrewburger/Desktop/andrew_cpp_library/Watchdog/circular_buffer_queue/
+#LIB = -L/Users/andrewburger/Desktop/andrew_cpp_library/Watchdog/circular_buffer_queue/
 
 default: test
 
