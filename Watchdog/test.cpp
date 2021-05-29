@@ -3,13 +3,17 @@
 #include "Watchdog.hpp"
 
 //TODO: Add more testing
+using namespace std::chrono_literals;
 
-std::atomic<bool> is_over_max_workers{false};
+std::mutex m_mutex;
+bool is_over_max_workers{false};
 
-void dummy_worker(Watchdog &dog) {
+static void dummy_worker(Watchdog &dog) {
 
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::thread::id worker_id = std::this_thread::get_id();
-    if (dog.pet(worker_id)) {
+
+    if (!dog.pet(worker_id)) {
         is_over_max_workers = true;
     }
 }
@@ -21,8 +25,6 @@ static void worker1(Watchdog &dog, int &pet_counter) {
     int i = 6;
     while(1) {
 
-        std::cout << "pet_counter is " << pet_counter << std::endl;
-
         if (--i >= 0) {
             if (dog.pet(worker_id)) {
                 pet_counter++;
@@ -33,8 +35,7 @@ static void worker1(Watchdog &dog, int &pet_counter) {
             break;
         }
 
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(10ms);
     }
 }
 
@@ -62,11 +63,12 @@ TEST_F(WatchdogTest, TestPetDogSixTimes) {
 TEST_F(WatchdogTest, AddingWorkerWhenFull) {
 
     std::vector<std::thread> threads;
+
     for (int i = 0; i < DEFAULT_MAX_WORKERS + 1; ++i) {
-        // std::thread i(dummy_worker, std::ref(dog2_))
         threads.push_back(std::thread(dummy_worker, std::ref(dog2_)));
-        threads[i].join();
+        std::this_thread::sleep_for(50ms);
     }
+
     EXPECT_EQ(is_over_max_workers, true);
 }
 
