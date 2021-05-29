@@ -93,10 +93,8 @@ void Watchdog::sick_the_watch_dog() {
     while (enable_main_thread) {
 
         if (is_over_deadline()) {
-
             has_dog_barked_ = true;
-            std::cout << "A worker has failed to meet the deadline"
-                << std::endl;
+            break;
         }
 
         std::this_thread::sleep_until(get_next_deadline());
