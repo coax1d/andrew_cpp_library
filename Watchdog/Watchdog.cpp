@@ -115,5 +115,5 @@ const bool Watchdog::get_has_barked() {
 }
 
 void Watchdog::set_has_barked(bool bark_status) {
-    has_dog_barked_ = false;
+    has_dog_barked_ = bark_status;
 }
