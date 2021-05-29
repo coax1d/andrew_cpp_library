@@ -9,4 +9,3 @@ test: test.cpp Watchdog.cpp Watchdog.hpp
 
 clean:
 	$(RM) test *.o *~
-
