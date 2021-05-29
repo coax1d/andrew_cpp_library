@@ -9,6 +9,7 @@ Author: Andrew Burger */
 #include <utility>
 #include <assert.h>
 #include <cstring>
+#include <mutex>
 
 #define DEFAULT_QUEUE_SIZE 512
 
@@ -73,7 +74,7 @@ void Queue<T>::put_queue(U &&item) {
 template<class T>
 T Queue<T>::get_queue() {
 
-    std::lock_guard<std::thread> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
     assert(!is_empty());
 
