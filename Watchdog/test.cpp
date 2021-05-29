@@ -62,7 +62,6 @@ class WatchdogTest : public ::testing::Test {
             }
         }
 
-
         std::mutex mutex_;
         bool is_over_max_workers_{false};
 
