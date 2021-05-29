@@ -9,6 +9,7 @@ Author: Andrew Burger */
 #include <utility>
 #include <assert.h>
 #include <cstring>
+#include <mutex>
 
 #define DEFAULT_QUEUE_SIZE 512
 
@@ -35,6 +36,7 @@ class Queue {
         std::unique_ptr<T[]>queue_{nullptr};
         const size_t queue_len_{DEFAULT_QUEUE_SIZE};
         bool is_full_{false};
+        std::mutex mutex_;
 };
 
 
@@ -52,8 +54,7 @@ template<class T>
 template<class U>
 void Queue<T>::put_queue(U &&item) {
 
-    //TODO: Add in thread safety here
-    // std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
     if (is_full_) {
         queue_exit_ = (queue_exit_ + 1) % queue_len_;
@@ -73,8 +74,7 @@ void Queue<T>::put_queue(U &&item) {
 template<class T>
 T Queue<T>::get_queue() {
 
-    //make thread safe
-    //TODO: std::lock_guard<std::thread> lock(mutex_)
+    std::lock_guard<std::mutex> lock(mutex_);
 
     assert(!is_empty());
 
