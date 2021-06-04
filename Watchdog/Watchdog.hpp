@@ -7,18 +7,23 @@
 #include <deque>
 #include <unordered_map>
 
+using namespace std::chrono_literals;
+
 #define DEFAULT_INTERVAL 5 // Seconds
 #define DEFAULT_MAX_WORKERS 5
 
 class Watchdog {
-
-    using time_point_t =
+    public:
+        using time_point_t =
         std::chrono::time_point<std::chrono::system_clock>;
 
-    using worker_id = std::thread::id;
-    using queue_iterator = std::deque<std::pair<worker_id, time_point_t>>::iterator;
+        using worker_id = std::thread::id;
+        using queue_iterator = std::deque<std::pair<worker_id, time_point_t>>::iterator;
 
-    public:
+        //TODO: Add change #defines to use these variables
+        // static constexpr auto default_interval = 5s;
+        // static constexpr auto default_max_workers = 5;
+
         Watchdog();
         Watchdog(double deadline_interval, size_t max_workers);
         ~Watchdog();
