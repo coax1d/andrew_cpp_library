@@ -19,7 +19,7 @@ class UdpSocket {
         *   Description: choose between init client or server
         *   @return None
         */
-        virtual void init();
+        virtual void init() = 0;
 
         /**
         *   Description: send message
@@ -39,7 +39,6 @@ class UdpSocket {
         */
         virtual bool close() = 0;
 
-    private:
         /**
          * @return None
          */

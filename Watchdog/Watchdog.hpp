@@ -66,48 +66,47 @@ class Watchdog {
         */
         void set_has_barked(bool bark_status);
 
+    private:
+        std::mutex mutex_;
 
-        private:
-            std::mutex mutex_;
+        /*
+        Queue of workers and their corresponding deadlines.
+        */
+        std::deque<std::pair<worker_id, time_point_t>> queue_;
 
-            /*
-            Queue of workers and their corresponding deadlines.
-            */
-            std::deque<std::pair<worker_id, time_point_t>> queue_;
+        /*
+        Workers can finish their job before they get to the front of the queue,
+        therefore if finish their job sooner than others they must be removed from
+        the queue and then placed at the back of the line. This helps keep track of
+        where they are in the queue for quick removal.
+        */
+        std::unordered_map<worker_id, queue_iterator> worker_map_;
 
-            /*
-            Workers can finish their job before they get to the front of the queue,
-            therefore if finish their job sooner than others they must be removed from
-            the queue and then placed at the back of the line. This helps keep track of
-            where they are in the queue for quick removal.
-            */
-            std::unordered_map<worker_id, queue_iterator> worker_map_;
+        size_t max_workers_{};
+        size_t current_workers_{};
 
-            size_t max_workers_{};
-            size_t current_workers_{};
+        /*
+        Time interval which workers have to complete task
+        and pet the doggy
+        */
+        std::chrono::duration<double> interval_;
 
-            /*
-            Time interval which workers have to complete task
-            and pet the doggy
-            */
-            std::chrono::duration<double> interval_;
+        /*
+        For easy start and stop of the main watchdog thread
+        */
+        std::atomic<bool> enable_main_thread{true};
 
-            /*
-            For easy start and stop of the main watchdog thread
-            */
-            std::atomic<bool> enable_main_thread{true};
+        /*
+        This main thread monitors all of the workers in the queue
+        and their corresponding deadlines. I.E. the big scary doggy dog.
+        */
+        std::thread main_thread_;
 
-            /*
-            This main thread monitors all of the workers in the queue
-            and their corresponding deadlines. I.E. the big scary doggy dog.
-            */
-            std::thread main_thread_;
+        /*
+        Flag which tells whether a worker went over his deadline
+        */
+        bool has_dog_barked_{false};
 
-            /*
-            Flag which tells whether a worker went over his deadline
-            */
-            bool has_dog_barked_{false};
-
-            void sick_the_watch_dog();
-            auto calculate_deadline() -> decltype(std::chrono::system_clock::now());
+        void sick_the_watch_dog();
+        auto calculate_deadline() -> decltype(std::chrono::system_clock::now());
 };

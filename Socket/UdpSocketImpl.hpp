@@ -9,7 +9,6 @@
 
 class UdpSocketImpl : UdpSocket {
     public:
-
         static constexpr size_t default_max_line = 1024;
         static constexpr size_t default_port = 8075;
         static constexpr auto default_address = INADDR_ANY;
