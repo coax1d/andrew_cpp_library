@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Socket.hpp"
+#include "UdpSocket.hpp"
 #include "gtest/gtest.h"
 
 class SocketTest : public ::testing::Test {
