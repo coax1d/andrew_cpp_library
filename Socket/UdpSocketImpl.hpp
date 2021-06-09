@@ -1,21 +1,49 @@
+#pragma once
 #include <iostream>
-#include <memory>
-#include <utility>
-#include <assert.h>
-#include <cstring>
 #include <mutex>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include "UdpSocket.hpp"
 
 class UdpSocketImpl : UdpSocket {
     public:
 
-        virtual bool bind(int fd, const std::string address) override;
-        virtual bool listen(int fd)                          override;
-        virtual bool send(int fd, std::string &buffer)       override;
-        virtual bool receive(int fd, std::string &buffer)    override;
+        static constexpr size_t default_max_line = 1024;
+        static constexpr size_t default_port = 8075;
+        static constexpr auto default_address = INADDR_ANY;
+        static constexpr auto default_config = SockConfiguration::CLIENT;
+
+        UdpSocketImpl();
+        ~UdpSocketImpl();
+
+        UdpSocketImpl(UdpSocketImpl &) = delete;
+        UdpSocketImpl & operator=(UdpSocketImpl &) = delete;
+
+        UdpSocketImpl(
+            SockConfiguration config,
+            size_t port,
+            size_t max_line,
+            std::string server_address);
+
+        virtual void init() override;
+
+        virtual bool send(std::string_view msg,
+                std::string_view address) override;
+        virtual bool receive(std::string &received_msg,
+                std::string_view address) override;
+        virtual bool close() override;
 
     private:
-        SockConfiguration config_type_{SockConfiguration::ERROR};
-        size_t port_;
-        std::string address_;
+        SockConfiguration config_{SockConfiguration::CLIENT};
+        size_t port_{default_port};
+        size_t max_line_{default_max_line};
+        struct sockaddr_in server_address_{};
+        int sock_fd_;
+        char *receive_buffer_;
+        std::mutex mutex_;
+
+        virtual void init_client() override;
+        virtual void init_server() override;
 };
