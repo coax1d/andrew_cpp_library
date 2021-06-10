@@ -24,14 +24,22 @@ class UdpSocketImpl : UdpSocket {
             SockConfiguration config,
             size_t port,
             size_t max_line,
-            std::string server_address);
+            std::string server_address
+        );
 
         virtual void init() override;
 
-        virtual bool send(std::string_view msg,
-                std::string_view address) override;
-        virtual bool receive(std::string &received_msg,
-                std::string_view address) override;
+        virtual bool send(
+            const std::string msg,
+            const std::string address
+        ) override;
+
+        virtual std::tuple<std::string&, bool>
+        receive(
+            std::string &received_msg,
+            const std::string address
+        ) override;
+
         virtual bool close() override;
 
     private:
@@ -45,4 +53,24 @@ class UdpSocketImpl : UdpSocket {
 
         virtual void init_client() override;
         virtual void init_server() override;
+
+        virtual bool send_client(
+            const std::string msg,
+            const std::string address
+        ) override;
+
+        virtual bool send_server(
+            const std::string msg,
+            const std::string address
+        ) override;
+
+        virtual bool receive_client(
+            std::string &received_msg,
+            const std::string address
+        ) override;
+
+        virtual bool receive_server(
+            std::string &received_msg,
+            const std::string address
+        ) override;
 };
