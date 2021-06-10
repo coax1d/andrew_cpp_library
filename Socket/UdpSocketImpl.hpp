@@ -12,7 +12,6 @@ class UdpSocketImpl : UdpSocket {
         static constexpr size_t default_max_line = 1024;
         static constexpr size_t default_port = 8075;
         static constexpr auto default_address = INADDR_ANY;
-        static constexpr auto default_config = SockConfiguration::CLIENT;
 
         UdpSocketImpl();
         ~UdpSocketImpl();
@@ -21,7 +20,7 @@ class UdpSocketImpl : UdpSocket {
         UdpSocketImpl & operator=(UdpSocketImpl &) = delete;
 
         UdpSocketImpl(
-            SockConfiguration config,
+            bool is_server,
             size_t port,
             size_t max_line,
             std::string server_address
@@ -43,7 +42,7 @@ class UdpSocketImpl : UdpSocket {
         virtual bool close() override;
 
     private:
-        SockConfiguration config_{SockConfiguration::CLIENT};
+        bool is_server_{false};
         size_t port_{default_port};
         size_t max_line_{default_max_line};
         struct sockaddr_in server_address_{};

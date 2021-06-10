@@ -5,11 +5,11 @@
 #include "UdpSocketImpl.hpp"
 
 UdpSocketImpl::UdpSocketImpl(
-        SockConfiguration config,
+        bool is_server,
         size_t port,
         size_t max_line,
         std::string server_address) :
-        config_{config},
+        is_server_{is_server},
         port_{port},
         max_line_{max_line}
 {
@@ -30,7 +30,12 @@ UdpSocketImpl::UdpSocketImpl() {
     server_address_.sin_port = htons(port_);
     server_address_.sin_addr.s_addr = default_address;
 
-    init();
+    try {
+        init();
+    }
+    catch (...) {
+        throw;
+    }
 }
 
 UdpSocketImpl::~UdpSocketImpl() {
@@ -38,31 +43,32 @@ UdpSocketImpl::~UdpSocketImpl() {
 }
 
 void UdpSocketImpl::init() {
-
-    if (config_ == SockConfiguration::SERVER) {
-        init_server();
+    try {
+        is_server_ ? init_server() : init_client();
     }
-    else {
-        init_client();
+    catch (...) {
+        std::cout << "init object failure" << std::endl;
+        throw;
     }
 }
 
 void UdpSocketImpl::init_client() {
-
     if ((sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-          throw SockError::SOCK_CREATION_FAIL;
+        std::cout << "Socket Creation failure client" << std::endl;
+        throw SockError::SOCK_CREATION_FAIL;
     }
 }
 
 void UdpSocketImpl::init_server() {
-
     if ((sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        std::cout << "Socket Creation failure server" << std::endl;
         throw SockError::SOCK_CREATION_FAIL;
     }
 
     if (bind(sock_fd_, (const sockaddr *)&server_address_,
         sizeof(server_address_)) < 0)
     {
+        std::cout << "Socket Bind Fail" << std::endl;
         throw SockError::BIND_FAIL;
     }
 }
@@ -76,12 +82,8 @@ bool UdpSocketImpl::send(
 
     bool success = false;
 
-    if (config_ == SockConfiguration::SERVER) {
-        success = send_server(msg, address);
-    }
-    else {
-        success = send_client(msg, address);
-    }
+    success = is_server_ ?  send_server(msg, address) :
+                            send_client(msg, address);
 
     return success;
 }
@@ -117,17 +119,12 @@ bool UdpSocketImpl::send_server(
 
 std::tuple<std::string&, bool>
 UdpSocketImpl::receive(std::string &msg, const std::string address) {
-
     std::lock_guard<std::mutex> lock(mutex_);
 
     bool success = false;
 
-    if (config_ == SockConfiguration::SERVER) {
-        success = receive_server(msg, address);
-    }
-    else {
-        success = receive_client(msg, address);
-    }
+    success = is_server_ ?  receive_server(msg, address) :
+                            receive_client(msg, address);
 
     return std::make_tuple(std::ref(msg), success);
 }
