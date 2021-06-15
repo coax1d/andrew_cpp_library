@@ -39,7 +39,7 @@ UdpSocketImpl::UdpSocketImpl() {
 }
 
 UdpSocketImpl::~UdpSocketImpl() {
-    delete receive_buffer_;
+    delete[] receive_buffer_;
 }
 
 void UdpSocketImpl::init() {
