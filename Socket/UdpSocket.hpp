@@ -10,7 +10,7 @@
 #include <string_view>
 #include <tuple>
 
-enum class SockError {SOCK_CREATION_FAIL, BIND_FAIL, SEND_FAIL, RECEIVE_FAIL};
+enum class SockError {SOCK_CREATION_FAIL, BIND_FAIL, SEND_FAIL, RECEIVE_FAIL, NONE};
 
 class UdpSocket {
     public:

@@ -30,12 +30,7 @@ UdpSocketImpl::UdpSocketImpl() {
     server_address_.sin_port = htons(port_);
     server_address_.sin_addr.s_addr = default_address;
 
-    try {
-        init();
-    }
-    catch (...) {
-        throw;
-    }
+    init();
 }
 
 UdpSocketImpl::~UdpSocketImpl() {
@@ -43,33 +38,27 @@ UdpSocketImpl::~UdpSocketImpl() {
 }
 
 void UdpSocketImpl::init() {
-    try {
-        is_server_ ? init_server() : init_client();
-    }
-    catch (...) {
-        std::cout << "init object failure" << std::endl;
-        throw;
-    }
+    is_server_ ? init_server() : init_client();
 }
 
 void UdpSocketImpl::init_client() {
     if ((sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         std::cout << "Socket Creation failure client" << std::endl;
-        throw SockError::SOCK_CREATION_FAIL;
+        error_state_ = SockError::SOCK_CREATION_FAIL;
     }
 }
 
 void UdpSocketImpl::init_server() {
     if ((sock_fd_ = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         std::cout << "Socket Creation failure server" << std::endl;
-        throw SockError::SOCK_CREATION_FAIL;
+        error_state_ = SockError::SOCK_CREATION_FAIL;
     }
 
     if (bind(sock_fd_, (const sockaddr *)&server_address_,
         sizeof(server_address_)) < 0)
     {
         std::cout << "Socket Bind Fail" << std::endl;
-        throw SockError::BIND_FAIL;
+        error_state_ = SockError::BIND_FAIL;
     }
 }
 
@@ -101,6 +90,8 @@ bool UdpSocketImpl::send_client(
         msg.size(), 0, (const sockaddr *)&server_address_,
         len)) < 0)
     {
+        std::cout << "Send failed as a client" << std::endl;
+        error_state_ = SockError::SEND_FAIL;
         return false;
     }
 

@@ -48,6 +48,7 @@ class UdpSocketImpl : UdpSocket {
         struct sockaddr_in server_address_{};
         int sock_fd_;
         char *receive_buffer_;
+        SockError error_state_{SockError::NONE};
         std::mutex mutex_;
 
         virtual void init_client() override;
