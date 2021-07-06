@@ -140,8 +140,11 @@ bool UdpSocketImpl::receive_server(
     return false;
 }
 
-bool UdpSocketImpl::close() {
+bool UdpSocketImpl::shutdown() {
     // Todo: implement me
     std::lock_guard<std::mutex> lock(mutex_);
+    if (close(sock_fd_) == 0) {
+        return true;
+    }
     return false;
 }

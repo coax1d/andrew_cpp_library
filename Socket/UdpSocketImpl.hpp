@@ -39,7 +39,7 @@ class UdpSocketImpl : UdpSocket {
             const std::string address
         ) override;
 
-        virtual bool close() override;
+        virtual bool shutdown() override;
 
     private:
         bool is_server_{false};

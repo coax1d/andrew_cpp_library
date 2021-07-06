@@ -102,5 +102,5 @@ class UdpSocket {
         *   @brief  close socket
         *   @return true if successful
         */
-        virtual bool close() = 0;
+        virtual bool shutdown() = 0;
 };
